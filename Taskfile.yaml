@@ -1,0 +1,19 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - go build -o out/dojo ./cmd/dojo/main.go
+
+  fmt:
+    cmds:
+      - go fmt ./...
+
+  lint:
+    cmds:
+      - golangci-lint run
+
+  lint:fix:
+    cmds:
+      - golangci-lint run --fix
