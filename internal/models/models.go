@@ -1,6 +1,7 @@
 package models
 
 type JJWorkspace struct {
-	Name string
-	Path string
+	Name     string
+	ChangeID string
+	Root     string
 }

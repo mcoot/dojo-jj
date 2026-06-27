@@ -19,10 +19,16 @@ func NewDojoService(filesystemClient dependencies.FileSystemClient, jjClient dep
 
 func (s *DojoService) GetWorkspace() error {
 	if !s.jjClient.IsJJAvailable() {
-		return &models.DojoError{
-			Code:    models.ErrJJNotOnPath,
-			Message: "JJ not found on path",
-		}
+		return models.NewDojoError(models.ErrJJNotOnPath, "JJ not found on path")
+	}
+
+	_, err := s.jjClient.ListWorkspaces()
+	if err != nil {
+		return models.NewDojoErrorWithCause(
+			models.ErrJJFailedToListWorkspaces,
+			"Failed to list workspaces",
+			err,
+		)
 	}
 
 	return nil

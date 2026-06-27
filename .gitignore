@@ -8,6 +8,9 @@
 *.so
 *.dylib
 
+# Workspaces
+.workspaces/
+
 # Outputs directory
 out/**
 

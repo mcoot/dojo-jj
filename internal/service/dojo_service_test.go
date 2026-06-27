@@ -20,12 +20,22 @@ func (s *DojoServiceSuite) SetupTest() {
 	s.DojoServiceTestFixture = NewServiceTestFixture()
 }
 
-func (s *DojoServiceSuite) Test_WhenJJNotOnPath_ThenGetWorkspaceShouldReturnError() {
+func (s *DojoServiceSuite) Test_GetWorkspace_WhenJJNotOnPath_Fails() {
 	s.JJClient.SetJJInstalled(false)
 
 	err := s.service.GetWorkspace()
 
 	s.requireErrorWithCode(err, models.ErrJJNotOnPath)
+}
+
+func (s *DojoServiceSuite) Test_GetWorkspace_WhenGettingWorkspacesFails_Fails() {
+	s.JJClient.SetListWorkspacesError(
+		models.NewDojoError(models.ErrJJFailedToListWorkspaces, "failed to list workspaces"),
+	)
+
+	err := s.service.GetWorkspace()
+
+	s.requireErrorWithCode(err, models.ErrJJFailedToListWorkspaces)
 }
 
 func (s *DojoServiceSuite) requireErrorWithCode(err error, code models.ErrorCode) {
