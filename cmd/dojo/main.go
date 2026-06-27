@@ -1,7 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"log"
+
+	"github.com/mcoot/dojo-jj/internal/cmd"
+	"github.com/mcoot/dojo-jj/internal/factory"
+)
 
 func main() {
-	fmt.Println("Hi")
+	app, err := factory.BuildApp()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cli := cmd.BuildCli(app)
+
+	err = cli.Execute()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
