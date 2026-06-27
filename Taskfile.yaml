@@ -2,6 +2,12 @@
 version: '3'
 
 tasks:
+  default:
+    cmds:
+      - task: fmt
+      - task: lint:fix
+      - task: unit
+
   build:
     cmds:
       - go build -o out/dojo ./cmd/dojo/main.go
@@ -18,7 +24,7 @@ tasks:
     cmds:
       - golangci-lint run --fix
 
-  test:
+  unit:
     cmds:
       - go test ./...
 
