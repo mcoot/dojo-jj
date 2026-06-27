@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dojo CLI E2E Test Execution Plan</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --ink: #172033;
+      --muted: #58677c;
+      --line: #d9e2ec;
+      --accent: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --max: 1120px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .progress-shell {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 20;
+      height: 5px;
+      background: rgba(23, 32, 51, 0.12);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      transition: width 160ms ease;
+    }
+
+    .deck-meta {
+      position: fixed;
+      right: 1rem;
+      top: 1rem;
+      z-index: 19;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    #deck { scroll-snap-type: y proximity; }
+
+    .slide {
+      min-height: 100svh;
+      padding: 5rem 1.5rem 3rem;
+      display: grid;
+      place-items: center;
+      scroll-snap-align: start;
+    }
+
+    .card {
+      width: min(100%, var(--max));
+      min-height: min(76svh, 760px);
+      padding: 3rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.09);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card.compact { min-height: auto; }
+
+    .eyebrow {
+      margin: 0 0 0.9rem;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.08;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    h1 { font-size: 3.4rem; max-width: 13ch; }
+    h2 { font-size: 2.35rem; max-width: 18ch; }
+    h3 { font-size: 1.35rem; }
+
+    p, li {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.58;
+    }
+
+    code {
+      padding: 0.08rem 0.28rem;
+      border-radius: 4px;
+      background: #eef2ff;
+      color: #1e40af;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    .lead {
+      max-width: 66ch;
+      font-size: 1.2rem;
+      color: #3f4f65;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(340px, 1.05fr);
+      gap: 2.2rem;
+      align-items: start;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .panel, .criterion, .stage {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+      padding: 1.1rem;
+    }
+
+    .panel strong, .criterion strong, .stage strong {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--ink);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 1.45rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.42rem 0.62rem;
+      background: #fff;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .number-list {
+      counter-reset: step;
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem 0 0;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .number-list li {
+      counter-increment: step;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.85rem;
+      align-items: start;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .number-list li::before {
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 8px;
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .criteria-list {
+      display: grid;
+      gap: 0.78rem;
+      padding: 0;
+      margin: 1.2rem 0 0;
+      list-style: none;
+    }
+
+    .criteria-list li {
+      display: grid;
+      grid-template-columns: 1.25rem 1fr;
+      gap: 0.7rem;
+      padding: 0.86rem 0.95rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .criteria-list li::before {
+      content: "+";
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 1.8rem;
+      align-items: stretch;
+    }
+
+    .stage-index {
+      display: inline-grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      margin-bottom: 0.85rem;
+      border-radius: 8px;
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .milestone-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(330px, 1.05fr);
+      gap: 1.25rem;
+      margin-top: 1.55rem;
+      align-items: stretch;
+    }
+
+    .milestone-stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .primary {
+      background: #eef6ff;
+      border-color: #bfdbfe;
+    }
+
+    .test-matrix {
+      width: 100%;
+      margin-top: 1.3rem;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .test-matrix th, .test-matrix td {
+      padding: 0.95rem;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    .test-matrix th {
+      color: var(--ink);
+      background: #edf2f7;
+      font-size: 0.86rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .test-matrix tr:last-child td { border-bottom: 0; }
+    .test-matrix td { color: var(--muted); line-height: 1.5; }
+
+    .diagram-wrap {
+      margin-top: 1.4rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    .mermaid { min-width: 720px; }
+
+    .callout {
+      margin-top: 1.35rem;
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--amber);
+      border-radius: 8px;
+      background: #fffbeb;
+      color: #713f12;
+    }
+
+    .footer-note {
+      position: absolute;
+      left: 3rem;
+      bottom: 2rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    kbd {
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 0.12rem 0.34rem;
+      background: #fff;
+      color: var(--ink);
+      font-size: 0.82em;
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 4.5rem 1rem 2rem; }
+      .card { padding: 1.4rem; min-height: auto; }
+      h1 { font-size: 2.4rem; max-width: none; }
+      h2 { font-size: 1.85rem; max-width: none; }
+      .two-col, .grid, .grid.two, .flow, .milestone-layout { grid-template-columns: 1fr; }
+      .deck-meta { display: none; }
+      .footer-note { position: static; margin-top: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-shell" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="deck-meta" aria-live="polite">
+    <span id="slideCounter">1 / 12</span>
+    <span>Use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or scroll</span>
+  </div>
+
+  <div id="deck" role="main">
+    <div class="slide" id="title" aria-labelledby="title-heading">
+      <div class="card">
+        <p class="eyebrow">Plan review</p>
+        <h1 id="title-heading">Dojo CLI E2E Test Execution</h1>
+        <p class="lead">A Go-native, opt-in E2E harness that runs the compiled <code>dojo</code> binary against isolated Jujutsu repositories.</p>
+        <div class="tag-row">
+          <span class="tag">Status: Draft for review</span>
+          <span class="tag">Artifact: plan.md</span>
+          <span class="tag">Updated: 2026-06-27</span>
+        </div>
+        <p class="footer-note">Keyboard, scroll, and progress navigation are enabled.</p>
+      </div>
+    </div>
+
+    <div class="slide" id="problem" aria-labelledby="problem-heading">
+      <div class="card two-col">
+        <div>
+          <p class="eyebrow">01 - Problem</p>
+          <h2 id="problem-heading">The placeholder suite is not an executable black-box E2E harness.</h2>
+          <p class="lead">Tests need to stay ordinary Go tests while exercising the compiled CLI, real JJ commands, and disposable repositories.</p>
+        </div>
+        <div class="grid two">
+          <div class="panel"><strong>Current state</strong><p><code>internal/e2e</code> has a placeholder suite with no <code>Test...</code> entry point.</p></div>
+          <div class="panel"><strong>Target state</strong><p><code>test/e2e</code> runs tagged Go tests through <code>DOJO_BIN</code>.</p></div>
+          <div class="panel"><strong>Constraint</strong><p>No production internals are imported by E2E tests.</p></div>
+          <div class="panel"><strong>Isolation</strong><p>Repos, workspaces, JJ config, and HOME live under temp roots.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="approach" aria-labelledby="approach-heading">
+      <div class="card two-col">
+        <div>
+          <p class="eyebrow">02 - Approach</p>
+          <h2 id="approach-heading">Use Go tests as the harness and subprocesses as the boundary.</h2>
+          <p class="lead">The Taskfile builds the artifact; the E2E package validates it, prepares isolated JJ state, and runs real CLI commands.</p>
+        </div>
+        <ol class="number-list">
+          <li><span><strong>Wire the package</strong><br />Move to <code>test/e2e</code>, add build tags, register the suite, and add <code>task e2e</code>.</span></li>
+          <li><span><strong>Create the world</strong><br />Resolve <code>DOJO_BIN</code>, build deterministic env, and capture subprocess results.</span></li>
+          <li><span><strong>Isolate JJ state</strong><br />Generate a colocated template repo and copy it for each test.</span></li>
+          <li><span><strong>Assert CLI behavior</strong><br />Run <code>dojo --help</code> and <code>dojo get</code> from copied repos.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="slide" id="acceptance" aria-labelledby="acceptance-heading">
+      <div class="card">
+        <p class="eyebrow">03 - Acceptance</p>
+        <h2 id="acceptance-heading">Done means both normal and tagged test workflows are proven.</h2>
+        <ul class="criteria-list">
+          <li><span><code>go test ./...</code> passes with <code>DOJO_BIN</code> unset.</span></li>
+          <li><span><code>task e2e</code> builds <code>out/dojo</code> and runs <code>go test -tags=e2e ./test/e2e</code>.</span></li>
+          <li><span>Tagged tests fail clearly when <code>DOJO_BIN</code> is missing or invalid.</span></li>
+          <li><span>E2E tests create all mutable state under <code>t.TempDir</code> and use test-owned <code>JJ_CONFIG</code>.</span></li>
+          <li><span><code>rg 'github.com/mcoot/dojo-jj/internal/(cmd|factory|service|dependencies)' test/e2e</code> returns no matches.</span></li>
+        </ul>
+        <div class="callout">Manual verification is <code>task test</code>, then <code>task e2e</code>, then one targeted failure-path run for <code>dojo get</code> without JJ on PATH.</div>
+      </div>
+    </div>
+
+    <div class="slide" id="architecture" aria-labelledby="architecture-heading">
+      <div class="card">
+        <p class="eyebrow">04 - Architecture</p>
+        <h2 id="architecture-heading">Artifact-first test flow</h2>
+        <p class="lead">The compiled binary is supplied by the caller; the test process owns setup and assertions only.</p>
+        <div class="diagram-wrap">
+          <pre class="mermaid">
+flowchart LR
+  Task[task e2e] --> Build[go build out/dojo]
+  Build --> GoTest[go test -tags=e2e]
+  GoTest --> World[test/e2e/world]
+  World --> Config[Temp HOME and JJ_CONFIG]
+  World --> Template[Generated JJ template]
+  Template --> Copy[Per-test repo copy]
+  Copy --> Dojo[DOJO_BIN subprocess]
+  Copy --> JJ[jj subprocess]
+  Dojo --> Assert[Assertions]
+  JJ --> Assert
+          </pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="contracts" aria-labelledby="contracts-heading">
+      <div class="card">
+        <p class="eyebrow">05 - Contracts</p>
+        <h2 id="contracts-heading">Small world API, strict subprocess rules</h2>
+        <div class="grid" style="margin-top: 1.5rem;">
+          <div class="panel"><strong><code>world.New(t)</code></strong><p>Validates <code>DOJO_BIN</code>, resolves <code>jj</code>, creates temp root, HOME, and JJ config.</p></div>
+          <div class="panel"><strong><code>RunDojo</code> and <code>RunJJ</code></strong><p>Run with explicit working directory, timeout, isolated env, and separate stdout/stderr capture.</p></div>
+          <div class="panel"><strong><code>NewRepoFromTemplate</code></strong><p>Copies the read-only generated colocated JJ template into a per-test repo path.</p></div>
+        </div>
+        <ul class="criteria-list">
+          <li><span>Use <code>jj</code> subprocesses only; no direct <code>git</code> invocations.</span></li>
+          <li><span>Assert substrings for <code>log.Fatal</code> stderr because timestamps may be present.</span></li>
+          <li><span>Keep helper behavior testable with fake executables or Go helper processes.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slide" id="milestone-1" aria-labelledby="milestone-1-heading">
+      <div class="card">
+        <p class="eyebrow">06 - Milestone 1</p>
+        <h2 id="milestone-1-heading">Package and task wiring</h2>
+        <div class="milestone-layout">
+          <div class="milestone-stack">
+            <div class="panel primary"><strong>Implementation</strong><p>Move the placeholder harness to <code>test/e2e</code>, add <code>//go:build e2e</code>, register <code>TestWorkspacePoolE2ESuite</code>, and add Taskfile targets.</p></div>
+            <div class="panel"><strong>Files</strong><p><code>Taskfile.yaml</code>, <code>test/e2e/workspace_pool_test.go</code>, <code>test/e2e/world/world.go</code>.</p></div>
+          </div>
+          <div class="panel">
+            <h3>Acceptance</h3>
+            <ul class="criteria-list">
+              <li><span><code>go test ./...</code> passes without <code>DOJO_BIN</code>.</span></li>
+              <li><span><code>go test -tags=e2e ./test/e2e</code> discovers the suite.</span></li>
+              <li><span><code>task e2e</code> depends on <code>build</code> and sets <code>DOJO_BIN</code>.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="milestone-2" aria-labelledby="milestone-2-heading">
+      <div class="card">
+        <p class="eyebrow">07 - Milestone 2</p>
+        <h2 id="milestone-2-heading">Binary, environment, and command helpers</h2>
+        <table class="test-matrix" aria-label="Milestone 2 test plan">
+          <thead><tr><th>Test</th><th>Setup</th><th>Expected result</th></tr></thead>
+          <tbody>
+            <tr><td>Missing <code>DOJO_BIN</code></td><td>Unset env var</td><td>Setup fails with a message naming <code>DOJO_BIN</code>.</td></tr>
+            <tr><td>Invalid binary</td><td>Point to non-executable temp file</td><td>Setup fails before any CLI command runs.</td></tr>
+            <tr><td>Command capture</td><td>Fake executable writes stdout/stderr</td><td>Result includes exit code, streams, args, dir, and duration.</td></tr>
+            <tr><td>Environment</td><td>Construct world env</td><td><code>HOME</code>, <code>JJ_CONFIG</code>, and <code>NO_COLOR</code> point to deterministic values.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="slide" id="milestone-3" aria-labelledby="milestone-3-heading">
+      <div class="card">
+        <p class="eyebrow">08 - Milestone 3</p>
+        <h2 id="milestone-3-heading">JJ config isolation and copied template repos</h2>
+        <div class="flow">
+          <div class="stage"><span class="stage-index">1</span><strong>Write config</strong><p>Stable user, color, colocation, and signing values under temp root.</p></div>
+          <div class="stage"><span class="stage-index">2</span><strong>Init template</strong><p>Run <code>jj git init</code> in a generated colocated repo.</p></div>
+          <div class="stage"><span class="stage-index">3</span><strong>Copy per test</strong><p>Preserve <code>.jj</code>, <code>.git</code>, file modes, and directory shape.</p></div>
+          <div class="stage"><span class="stage-index">4</span><strong>Assert isolation</strong><p>Mutating a copy never changes the template or sibling copies.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="milestone-4" aria-labelledby="milestone-4-heading">
+      <div class="card">
+        <p class="eyebrow">09 - Milestone 4</p>
+        <h2 id="milestone-4-heading">Black-box CLI E2E coverage</h2>
+        <div class="milestone-layout">
+          <div class="panel primary"><strong>Tests</strong><p><code>dojo --help</code> from a copied repo, <code>dojo get</code> with JJ on PATH, and <code>dojo get</code> with JJ hidden from PATH.</p></div>
+          <div class="panel">
+            <h3>Acceptance</h3>
+            <ul class="criteria-list">
+              <li><span>Help exits 0 and mentions the root command and <code>get</code>.</span></li>
+              <li><span><code>dojo get</code> exits 0 when JJ is available.</span></li>
+              <li><span><code>dojo get</code> exits non-zero and stderr contains <code>JJ not found on path</code> when JJ is hidden.</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout"><code>dojo get</code> currently performs no workspace mutation when JJ exists, so this first E2E suite should stay scoped to the current observable behavior.</div>
+      </div>
+    </div>
+
+    <div class="slide" id="invariants" aria-labelledby="invariants-heading">
+      <div class="card two-col">
+        <div>
+          <p class="eyebrow">10 - Invariants</p>
+          <h2 id="invariants-heading">Rules that keep the harness honest</h2>
+          <p class="lead">These constraints should be checked during implementation and review.</p>
+        </div>
+        <div class="grid two">
+          <div class="criterion"><strong>Opt-in only</strong><p>Normal <code>go test ./...</code> does not need E2E setup.</p></div>
+          <div class="criterion"><strong>Black box</strong><p>E2E tests run <code>DOJO_BIN</code>; they do not instantiate internals.</p></div>
+          <div class="criterion"><strong>Disposable state</strong><p>All mutable state stays under temp directories.</p></div>
+          <div class="criterion"><strong>No new deps</strong><p>The initial harness uses the Go standard library, testify, Taskfile, and installed <code>jj</code>.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="stop" aria-labelledby="stop-heading">
+      <div class="card compact">
+        <p class="eyebrow">11 - Stop and ask</p>
+        <h2 id="stop-heading">Implementation should pause if the plan assumptions break.</h2>
+        <ul class="criteria-list">
+          <li><span>E2E tests require production CLI behavior changes beyond current <code>dojo get</code> success/error paths.</span></li>
+          <li><span><code>JJ_CONFIG=&lt;file&gt;</code> is not portable enough and needs a different isolation model.</span></li>
+          <li><span>The implementation would commit nested <code>.jj</code> or <code>.git</code> fixtures.</span></li>
+          <li><span>The Go tests would auto-build the binary instead of requiring explicit <code>DOJO_BIN</code>.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        background: "#ffffff",
+        primaryColor: "#eef6ff",
+        primaryTextColor: "#172033",
+        primaryBorderColor: "#2563eb",
+        lineColor: "#58677c",
+        secondaryColor: "#ecfdf5",
+        tertiaryColor: "#f8fafc"
+      }
+    });
+
+    const slides = [...document.querySelectorAll(".slide")];
+    const progressBar = document.querySelector("#progressBar");
+    const slideCounter = document.querySelector("#slideCounter");
+    let activeIndex = 0;
+    let scrollFrame = 0;
+    let programmaticTargetIndex = null;
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function updateProgress(index) {
+      const percent = slides.length <= 1 ? 100 : ((index + 1) / slides.length) * 100;
+      progressBar.style.width = `${percent}%`;
+      slideCounter.textContent = `${index + 1} / ${slides.length}`;
+    }
+
+    function setActive(index, options = {}) {
+      activeIndex = clamp(index, 0, slides.length - 1);
+      updateProgress(activeIndex);
+      if (!options.shouldScroll) return;
+      programmaticTargetIndex = activeIndex;
+      slides[activeIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function nearestSlideIndex() {
+      const viewportCenter = window.innerHeight / 2;
+      return slides.reduce((nearest, slide, index) => {
+        const rect = slide.getBoundingClientRect();
+        const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
+        return distance < nearest.distance ? { index, distance } : nearest;
+      }, { index: 0, distance: Infinity }).index;
+    }
+
+    function updateActiveFromScroll() {
+      scrollFrame = 0;
+      if (programmaticTargetIndex !== null) {
+        const targetTop = slides[programmaticTargetIndex].getBoundingClientRect().top;
+        const reachedTarget = Math.abs(targetTop) <= Math.max(4, window.innerHeight * 0.015);
+        if (!reachedTarget) return;
+        programmaticTargetIndex = null;
+      }
+      const nearest = nearestSlideIndex();
+      if (nearest !== activeIndex) setActive(nearest);
+    }
+
+    function requestScrollUpdate() {
+      if (scrollFrame) return;
+      scrollFrame = window.requestAnimationFrame(updateActiveFromScroll);
+    }
+
+    function cancelProgrammaticNavigation() {
+      if (programmaticTargetIndex === null) return;
+      programmaticTargetIndex = null;
+      requestScrollUpdate();
+    }
+
+    window.addEventListener("scroll", requestScrollUpdate, { passive: true });
+    window.addEventListener("scrollend", cancelProgrammaticNavigation);
+    window.addEventListener("wheel", cancelProgrammaticNavigation, { passive: true });
+    window.addEventListener("touchstart", cancelProgrammaticNavigation, { passive: true });
+    window.addEventListener("pointerdown", cancelProgrammaticNavigation);
+    window.addEventListener("resize", requestScrollUpdate);
+    setActive(nearestSlideIndex());
+
+    window.addEventListener("keydown", (event) => {
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
+      const nextKeys = ["ArrowRight", "ArrowDown", "PageDown", " "];
+      const prevKeys = ["ArrowLeft", "ArrowUp", "PageUp"];
+      if (nextKeys.includes(event.key)) {
+        event.preventDefault();
+        setActive(activeIndex + 1, { shouldScroll: true });
+      } else if (prevKeys.includes(event.key)) {
+        event.preventDefault();
+        setActive(activeIndex - 1, { shouldScroll: true });
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        setActive(0, { shouldScroll: true });
+      } else if (event.key === "End") {
+        event.preventDefault();
+        setActive(slides.length - 1, { shouldScroll: true });
+      }
+    });
+  </script>
+</body>
+</html>

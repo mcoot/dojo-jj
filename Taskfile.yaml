@@ -17,3 +17,16 @@ tasks:
   lint:fix:
     cmds:
       - golangci-lint run --fix
+
+  test:
+    cmds:
+      - go test ./...
+
+  e2e:
+    deps:
+      - build
+    env:
+      DOJO_BIN: "{{.TASKFILE_DIR}}/out/dojo"
+    cmds:
+      - go test -tags=e2e ./test/e2e
+      - go test -tags=e2e ./test/e2e/world
