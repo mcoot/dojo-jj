@@ -9,13 +9,13 @@ type GetCmd struct {
 }
 
 func (c *GetCmd) Run(app *factory.App) error {
-	return nil
+	return app.DojoService.GetWorkspace()
 }
 
 func (c *GetCmd) Mount(parent *cobra.Command, app *factory.App) {
 	cmd := &cobra.Command{
 		Use:   "get",
-		Short: "get a workspace",
+		Short: "launch a subshell in a workspace",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(app)
 		},

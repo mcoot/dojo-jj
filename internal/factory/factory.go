@@ -11,8 +11,9 @@ type App struct {
 
 func BuildApp() (*App, error) {
 	filesystemClient := dependencies.NewFileSystemClient()
+	jjClient := dependencies.NewJJClient()
 
-	dojoService := service.NewDojoService(filesystemClient)
+	dojoService := service.NewDojoService(filesystemClient, jjClient)
 
 	return &App{
 		DojoService: dojoService,

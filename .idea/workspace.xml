@@ -5,20 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="679e0485-86b7-4464-b702-25b43d4154a6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.golangci.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dojo-jj.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/go.imports.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/golinter.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Taskfile.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/dojo/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/dependencies/jj_client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/dependencies/mocks/jj_client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/models/errors.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/models/models.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/service/dojo_service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/service/dojo_service_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/service/test_fixture_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/cmd/get.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/cmd/get.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/dependencies/mocks/filesystem_client.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/dependencies/mocks/filesystem_client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/factory/factory.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/factory/factory.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/service/service.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,67 +42,67 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.6599009035960037" />
-      <entry key="MS500" value="4.041632349461726" />
-      <entry key="S2" value="7.146983383230659" />
-      <entry key="S5" value="9.227836941573756" />
-      <entry key="S10" value="12.134177304663464" />
-      <entry key="S30" value="20.203131392678973" />
-      <entry key="S60" value="30.024501046543996" />
-      <entry key="M2" value="44.99248282255977" />
-      <entry key="M5" value="65.61077364512917" />
-      <entry key="M10" value="76.64019826475939" />
-      <entry key="M15" value="81.00557747843779" />
-      <entry key="M30" value="85.7775634815131" />
-      <entry key="H1" value="88.32954223907296" />
-      <entry key="H2" value="89.64957661967979" />
-      <entry key="H4" value="90.32094043407231" />
-      <entry key="D1" value="90.88628474249872" />
-      <entry key="W1" value="90.98374171584634" />
+      <entry key="MS100" value="1.0000861445425433" />
+      <entry key="MS500" value="1.233291361213988" />
+      <entry key="S2" value="2.970443142153626" />
+      <entry key="S5" value="7.002001766169385" />
+      <entry key="S10" value="11.404901922060082" />
+      <entry key="S30" value="19.17863475064246" />
+      <entry key="S60" value="27.13291110785297" />
+      <entry key="M2" value="40.12953325708482" />
+      <entry key="M5" value="70.25455360384683" />
+      <entry key="M10" value="105.54622891107378" />
+      <entry key="M15" value="130.19989898658102" />
+      <entry key="M30" value="188.21664756623304" />
+      <entry key="H1" value="271.5437046426538" />
+      <entry key="H2" value="354.8787534975252" />
+      <entry key="H4" value="415.97348798329415" />
+      <entry key="D1" value="481.0972502999335" />
+      <entry key="W1" value="493.82893813239616" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="0.0" />
-      <entry key="S30" value="0.0" />
-      <entry key="S60" value="0.0" />
-      <entry key="M2" value="0.0" />
-      <entry key="M5" value="0.0" />
-      <entry key="M10" value="0.0" />
-      <entry key="M15" value="0.0" />
-      <entry key="M30" value="0.0" />
-      <entry key="H1" value="0.0" />
-      <entry key="H2" value="0.0" />
-      <entry key="H4" value="0.0" />
-      <entry key="D1" value="0.0" />
-      <entry key="W1" value="0.0" />
+      <entry key="MS100" value="6.100327019767955E-238" />
+      <entry key="MS500" value="3.606372837571591E-48" />
+      <entry key="S2" value="1.3783311172606866E-12" />
+      <entry key="S5" value="1.8612613642469728E-5" />
+      <entry key="S10" value="0.005017728281674009" />
+      <entry key="S30" value="0.2714607428395763" />
+      <entry key="S60" value="0.9254009936788853" />
+      <entry key="M2" value="2.0701410791462345" />
+      <entry key="M5" value="4.069494387657411" />
+      <entry key="M10" value="5.793048894876179" />
+      <entry key="M15" value="6.801916472173069" />
+      <entry key="M30" value="8.535525748727908" />
+      <entry key="H1" value="10.289266540210292" />
+      <entry key="H2" value="11.760738623622322" />
+      <entry key="H4" value="12.757473245567375" />
+      <entry key="D1" value="13.772894828721272" />
+      <entry key="W1" value="13.967022205535743" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.6256880967282263" />
-      <entry key="MS500" value="4.021910502299266" />
-      <entry key="S2" value="7.137021407100434" />
-      <entry key="S5" value="9.221910383209284" />
-      <entry key="S10" value="12.128560758496059" />
-      <entry key="S30" value="20.197469869860235" />
-      <entry key="S60" value="30.016318685026647" />
-      <entry key="M2" value="44.98280396584429" />
-      <entry key="M5" value="65.60368310314475" />
-      <entry key="M10" value="76.63580882461979" />
-      <entry key="M15" value="81.00243153170211" />
-      <entry key="M30" value="85.77587147735562" />
-      <entry key="H1" value="88.32866462797827" />
-      <entry key="H2" value="89.64912966879628" />
-      <entry key="H4" value="90.32071489115134" />
-      <entry key="D1" value="90.8862468621824" />
-      <entry key="W1" value="90.98373629723953" />
+      <entry key="MS100" value="0.0027921720395278782" />
+      <entry key="MS500" value="0.4504475130186365" />
+      <entry key="S2" value="2.5698111950241476" />
+      <entry key="S5" value="6.803900840530443" />
+      <entry key="S10" value="11.301050339505313" />
+      <entry key="S30" value="19.368912393427006" />
+      <entry key="S60" value="27.948890447130477" />
+      <entry key="M2" value="42.07929092401246" />
+      <entry key="M5" value="74.2205871538066" />
+      <entry key="M10" value="111.25946673633334" />
+      <entry key="M15" value="136.93704643946964" />
+      <entry key="M30" value="196.70904436736558" />
+      <entry key="H1" value="281.80546292915903" />
+      <entry key="H2" value="366.6231373106201" />
+      <entry key="H4" value="428.7218879839014" />
+      <entry key="D1" value="494.8684794782265" />
+      <entry key="W1" value="507.7957181800817" />
     </decayedShown>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4,
-  "fromUser": false
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4,
+  &quot;fromUser&quot;: false
+}</component>
   <component name="ProjectId" id="3FhwiF9HHFp5rbi2vaw9Vvy2QQy" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -113,6 +111,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "DefaultGoTemplateProperty": "Go File",
+    "Go Test.go test github.com/mcoot/dojo-jj/internal/service.executor": "Run",
     "JujutsuToolWindow.CollapsedPaths.8c2d1f28": "",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.GoLinterPluginOnboardingV2": "true",
@@ -136,7 +135,7 @@
     "to.speed.mode.migration.done": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Test.go test github.com/mcoot/dojo-jj/internal/service">
     <configuration name="go build github.com/mcoot/dojo-jj/cmd/dojo" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="dojo-jj" />
       <working_directory value="$PROJECT_DIR$" />
@@ -146,6 +145,22 @@
       <auto_managed_config_id value="$PROJECT_DIR$/cmd/dojo" />
       <method v="2" />
     </configuration>
+    <configuration name="go test github.com/mcoot/dojo-jj/internal/service" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="dojo-jj" />
+      <working_directory value="$PROJECT_DIR$/internal/service" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/mcoot/dojo-jj/internal/service" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.go test github.com/mcoot/dojo-jj/internal/service" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
