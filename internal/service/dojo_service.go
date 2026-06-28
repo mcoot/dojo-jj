@@ -1,19 +1,28 @@
 package service
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/mcoot/dojo-jj/internal/dependencies"
 	"github.com/mcoot/dojo-jj/internal/models"
 )
 
 type DojoService struct {
-	filesystemClient dependencies.FileSystemClient
-	jjClient         dependencies.JJClient
+	appConfig            *models.AppConfig
+	jjClient             dependencies.JJClient
+	workspacePoolService *WorkspacePoolService
 }
 
-func NewDojoService(filesystemClient dependencies.FileSystemClient, jjClient dependencies.JJClient) *DojoService {
+func NewDojoService(
+	appConfig *models.AppConfig,
+	jjClient dependencies.JJClient,
+	workspacePoolService *WorkspacePoolService,
+) *DojoService {
 	return &DojoService{
-		filesystemClient: filesystemClient,
-		jjClient:         jjClient,
+		appConfig:            appConfig,
+		jjClient:             jjClient,
+		workspacePoolService: workspacePoolService,
 	}
 }
 
@@ -22,14 +31,21 @@ func (s *DojoService) GetWorkspace() error {
 		return models.NewDojoError(models.ErrJJNotOnPath, "JJ not found on path")
 	}
 
-	_, err := s.jjClient.ListWorkspaces()
+	// Get the current repo root
+	_, err := s.jjClient.GetRepoRoot()
 	if err != nil {
-		return models.NewDojoErrorWithCause(
-			models.ErrJJFailedToListWorkspaces,
-			"Failed to list workspaces",
-			err,
-		)
+		if strings.Contains(err.Error(), "There is no jj repo") {
+			return models.NewDojoError(models.ErrNotInJJRepo, "not in a jj repo")
+		}
+		return models.NewDojoErrorWithCause(models.ErrJJGetRootFailed, "failed to get repo root", err)
 	}
 
-	return nil
+	// Acquire a workspace from the pool
+	//_, err := s.workspacePoolService.Acquire("some-repo")
+	//if err != nil {
+	//	return err
+	//}
+
+	// Print the command to use this workspace and release it
+	return errors.New("not implemented")
 }

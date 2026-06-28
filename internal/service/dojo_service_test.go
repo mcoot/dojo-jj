@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/mcoot/dojo-jj/internal/models"
@@ -28,14 +29,22 @@ func (s *DojoServiceSuite) Test_GetWorkspace_WhenJJNotOnPath_Fails() {
 	s.requireErrorWithCode(err, models.ErrJJNotOnPath)
 }
 
-func (s *DojoServiceSuite) Test_GetWorkspace_WhenGettingWorkspacesFails_Fails() {
-	s.JJClient.SetListWorkspacesError(
-		models.NewDojoError(models.ErrJJFailedToListWorkspaces, "failed to list workspaces"),
+func (s *DojoServiceSuite) Test_GetWorkspace_WhenNotInJJRepo_Fails() {
+	s.JJClient.SetGetRepoRootError(
+		errors.New("Error: There is no jj repo in \".\""),
 	)
 
 	err := s.service.GetWorkspace()
 
-	s.requireErrorWithCode(err, models.ErrJJFailedToListWorkspaces)
+	s.requireErrorWithCode(err, models.ErrNotInJJRepo)
+}
+
+func (s *DojoServiceSuite) Test_GetWorkspace_WhenGettingJJRootFails_Fails() {
+	s.JJClient.SetGetRepoRootError(errors.New("Error: something bad happened"))
+
+	err := s.service.GetWorkspace()
+
+	s.requireErrorWithCode(err, models.ErrJJGetRootFailed)
 }
 
 func (s *DojoServiceSuite) requireErrorWithCode(err error, code models.ErrorCode) {

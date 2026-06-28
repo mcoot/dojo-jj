@@ -16,6 +16,7 @@ const (
 
 type JJClient interface {
 	IsJJAvailable() bool
+	GetRepoRoot() (models.RepoRoot, error)
 	ListWorkspaces() ([]*models.JJWorkspace, error)
 	AddWorkspace(name, destPath, revSet string) (*models.JJWorkspace, error)
 }
@@ -31,6 +32,15 @@ func NewJJClient() *JJClientImpl {
 func (c *JJClientImpl) IsJJAvailable() bool {
 	_, err := exec.LookPath(jjBinary)
 	return err == nil
+}
+
+func (c *JJClientImpl) GetRepoRoot() (models.RepoRoot, error) {
+	output, err := c.runJJ("root")
+	if err != nil {
+		return "", err
+	}
+
+	return models.RepoRoot(strings.TrimSpace(string(output))), nil
 }
 
 func (c *JJClientImpl) ListWorkspaces() ([]*models.JJWorkspace, error) {
@@ -95,7 +105,7 @@ func parseJJWorkspaces(output string) ([]*models.JJWorkspace, error) {
 		}
 
 		workspaces = append(workspaces, &models.JJWorkspace{
-			Name:     fields[0],
+			Name:     models.WorkspaceID(fields[0]),
 			ChangeID: fields[1],
 			Root:     fields[2],
 		})

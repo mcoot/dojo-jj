@@ -3,6 +3,8 @@
 package e2e
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcoot/dojo-jj/test/e2e/world"
@@ -33,15 +35,7 @@ func (s *WorkspacePoolE2ESuite) Test_DojoHelp_FromCopiedRepo() {
 	assert.Contains(s.T(), result.Stdout, "get")
 }
 
-func (s *WorkspacePoolE2ESuite) Test_DojoGet_WhenJJOnPath() {
-	repo := s.NewRepoFromTemplate(s.T(), "get-with-jj")
-
-	result := s.RunDojo(s.T(), repo, "get")
-
-	result.RequireSuccess(s.T())
-}
-
-func (s *WorkspacePoolE2ESuite) Test_DojoGet_WhenJJMissingFromPath() {
+func (s *WorkspacePoolE2ESuite) Test_DojoGet_WhenJJMissingFromPath_Fails() {
 	repo := s.NewRepoFromTemplate(s.T(), "get-without-jj")
 	emptyPath := s.T().TempDir()
 
@@ -51,4 +45,15 @@ func (s *WorkspacePoolE2ESuite) Test_DojoGet_WhenJJMissingFromPath() {
 
 	result.RequireFailure(s.T())
 	assert.Contains(s.T(), result.Stderr, "JJ not found on path")
+}
+
+func (s *WorkspacePoolE2ESuite) Test_DojoGet_WhenNotInJJRepo_Fails() {
+	repo := s.NewRepoFromTemplate(s.T(), "get-without-jj")
+	// Delete the .jj directory
+	_ = os.RemoveAll(filepath.Join(repo, ".jj"))
+
+	result := s.RunDojo(s.T(), repo, "get")
+
+	result.RequireFailure(s.T())
+	assert.Contains(s.T(), result.Stderr, "not in a jj repo")
 }

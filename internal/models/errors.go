@@ -3,8 +3,9 @@ package models
 type ErrorCode string
 
 const (
-	ErrJJNotOnPath              ErrorCode = "JJ_NOT_ON_PATH"
-	ErrJJFailedToListWorkspaces ErrorCode = "JJ_FAILED_TO_LIST_WORKSPACES"
+	ErrJJNotOnPath     ErrorCode = "JJ_NOT_ON_PATH"
+	ErrNotInJJRepo     ErrorCode = "NOT_IN_JJ_REPO"
+	ErrJJGetRootFailed ErrorCode = "JJ_GET_ROOT_FAILED"
 )
 
 type DojoError struct {
